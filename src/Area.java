@@ -1,5 +1,5 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class Area
 {
@@ -8,16 +8,15 @@ public class Area
         int[][] yay;
         try(BufferedReader br = new BufferedReader(new FileReader(fileName)))
         {
-            String[] dimensions = br.readLine().split(" ");
-            yay = new int[Integer.parseInt(dimensions[0])][Integer.parseInt(dimensions[1])];
+            String[] dimensions = br.readLine().split("X");
+            yay = new int[Integer.parseInt(dimensions[1])][Integer.parseInt(dimensions[0])];
             for(int i = 0; i < yay.length; i++)
             {
                 String[] line = br.readLine().split(" ");
                 for(int e = 0; e < yay[0].length; e++)
-                    yay[i][e] = Integer.parseInt(line[i]);
+                    yay[i][e] = Integer.parseInt(line[e]);
             }
-        }
-        catch (Exception e)
+        }catch (Exception e)
         {
             return 0;
         }
@@ -31,9 +30,8 @@ public class Area
                 if(r < yay.length - 1) num += yay[r+1][c];
                 if(c > 0) num += yay[r][c-1];
                 if(c < yay[0].length - 1) num += yay[r][c+1];
-                if(ans > num) {
+                if(ans < num)
                     ans = num;
-                }
             }
         }
         return ans;

@@ -35,12 +35,11 @@ public class Grid
         int[][] yay;
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String[] dimensions = br.readLine().trim().split("X");
-            yay = new int[dimensions[0]][dimensions[1]];
+            yay = new int[Integer.parseInt(dimensions[1])][Integer.parseInt(dimensions[0])];
             for (int i = 0; i < yay.length; i++) {
                 String[] line = br.readLine().trim().split(" ");
-                for (int e = 0; e < yay[0].length; e++) {
+                for (int e = 0; e < yay[0].length; e++)
                     yay[i][e] = Integer.parseInt(line[e]);
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();
