@@ -12,8 +12,6 @@ public class AccessedOn {
             LocalDateTime myDateObj = LocalDateTime.now();
             DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("E, MMM dd HH:mm:ss yyyy");
             String formattedDate = myDateObj.format(myFormatObj);
-            FileReader huh = new FileReader(yay);
-            BufferedReader br = new BufferedReader(huh);
             yes.println(formattedDate.substring(0, formattedDate.length()-4) + "CDT " + formattedDate.substring(formattedDate.length()-4));
             bruh.close();
             yes.close();
