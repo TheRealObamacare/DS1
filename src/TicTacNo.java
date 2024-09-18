@@ -6,7 +6,7 @@ public class TicTacNo
     public static void main(String[] args) throws IOException {
         File yay = new File("TicTacNo.txt");
         FileWriter b = new FileWriter(yay);
-        Scanner kb = new Scanner(yay);
+        Scanner kb = new Scanner(System.in);
         PrintWriter bruh = new PrintWriter(yay);
         char[][] board = getArray("TicTacNo.txt");
         int row = 0;
@@ -15,31 +15,41 @@ public class TicTacNo
         boolean GG = false;
         do
         {
-            if(turnCount == 0)
-                System.out.printf(" %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n\n",board[0][0], board[0][1], board[0][2], board[1][0], board[1][1], board[1][2], board[2][0], board[2][1], board[2][2]);
-            else
-                System.out.printf("\n %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n\n",board[0][0], board[0][1], board[0][2], board[1][0], board[1][1], board[1][2], board[2][0], board[2][1], board[2][2]);
+            System.out.printf("\n %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n\n",board[0][0], board[0][1], board[0][2], board[1][0], board[1][1], board[1][2], board[2][0], board[2][1], board[2][2]);
             if(turnCount%2 == 0)
             {
                 do
                 {
-                    System.out.println("Entering 3 for row or column will save the game\nX enter the column for your move (0-2):");
+                    System.out.println("Entering 3 for column will save the game\nX enter the column for your move (0-2):");
                     col = kb.nextInt();
                     if(col == 3)
                     {
                         writeFile("TicTacNo.txt", board);
                         System.out.println("\nGame has been saved.");
+                        GG = true;
+                        b.close();
+                        bruh.close();
+                        break;
                     }
                     System.out.println("X enter the row for your move(0-2):");
                     row = kb.nextInt();
                     if(isValid(board, row, col) == false)
                     {
                         System.out.println("\nInvalid move, enter a new move.\n");
+                        System.out.println("X enter the column for your move(0-2):");
+                        col = kb.nextInt();
+                        System.out.println("X enter the row for your move(0-2):");
+                        row = kb.nextInt();
                     }
                     else
+                    {
                         turnCount++;
+                        board[row][col] = 'X';
+                        System.out.printf("\n %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n\n",board[0][0], board[0][1], board[0][2], board[1][0], board[1][1], board[1][2], board[2][0], board[2][1], board[2][2]);
+                    }
                 }while(isValid(board, row, col) == false);
-                board[row][col] = 'X';
+                if(GG)
+                    break;
             }
             else
             {
@@ -55,36 +65,39 @@ public class TicTacNo
             }
             writeFile("TicTacNo.txt", board);
             if(isWinner(board, 'X') == true)
+            {
+                System.out.println("\nX WINS!");
                 GG = true;
-            else if(isCat(board) == true)
-                GG = true;
+            }
             else if(isWinner(board, 'O') == true)
+            {
+                System.out.println("\nO WINS.");
                 GG = true;
+            }
+            else if(isCat(board) == true)
+            {
+                System.out.println("\nCats game.");
+                GG = true;
+            }
             else
                 GG = false;
         }while(GG == false);
         System.out.printf("\n %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n",board[0][0], board[0][1], board[0][2], board[1][0], board[1][1], board[1][2], board[2][0], board[2][1], board[2][2]);
-        if(isWinner(board, 'X') == true)
-            System.out.println("\nX WINS!");
-        else if(isCat(board) == false)
-            System.out.println("\nO WINS!");
-        else if(isCat(board) == true)
-            System.out.println("\nCats game.");
-        else
-            System.out.println("\nYou tied.");
         bruh.close();
+        yay.delete();
     }
     public static void writeFile(String fileName, char[][] board) throws FileNotFoundException {
         PrintWriter yay = new PrintWriter(fileName);
-        yay.print(board[0][0] + board[0][1] + board[0][2] + board[1][0] + board[1][1] + board[1][2] + board[2][0] + board[2][1] + board[2][2]);
+        yay.print(""+ board[0][0] + board[0][1] + board[0][2] + board[1][0] + board[1][1] + board[1][2] + board[2][0] + board[2][1] + board[2][2]);
+        yay.close();
     }
     public static char[][] getArray(String fileName) throws IOException {
         File no = new File(fileName);
         Scanner kb = new Scanner(no);
+        char[][] bruh = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
+        if(!kb.hasNext())
+            return bruh;
         String yay = kb.next();
-        if(!no.exists())
-            return new char[3][3];
-        char[][] bruh = new char[3][3];
         for(int i = 0; i < bruh.length; i++)
         {
             for(int e = 0; e< bruh[0].length; e++)
@@ -107,7 +120,7 @@ public class TicTacNo
         {
             for(int c = 0; c < board[0].length; c++)
             {
-                if(board [r][c] == 'y')
+                if(board [r][c] == ' ')
                 {
                     return false;
                 }
