@@ -1,143 +1,157 @@
 import java.util.*;
 import java.io.*;
 
-public class TicTacNo
-{
+public class TicTacNo {
     public static void main(String[] args) throws IOException {
         File yay = new File("TicTacNo.txt");
-        FileWriter b = new FileWriter(yay);
-        Scanner kb = new Scanner(System.in);
-        PrintWriter bruh = new PrintWriter(yay);
         char[][] board = getArray("TicTacNo.txt");
-        int row = 0;
-        int col = 0;
-        int turnCount = 0;
+        Scanner kb = new Scanner(System.in);
+        int row, col;
+        int turnCount = countTurns(board);
         boolean GG = false;
-        do
-        {
-            System.out.printf("\n %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n\n",board[0][0], board[0][1], board[0][2], board[1][0], board[1][1], board[1][2], board[2][0], board[2][1], board[2][2]);
-            if(turnCount%2 == 0)
-            {
-                do
-                {
-                    System.out.println("Entering 3 for column will save the game\nX enter the column for your move (0-2):");
+        boolean isGameSaved = false;
+
+        do {
+            printBoard(board);
+
+            if (turnCount % 2 == 0) {
+                while (true) {
+                    System.out.println("Enter 3 for column to save the game\nX enter the column for your move (0-2):");
                     col = kb.nextInt();
-                    if(col == 3)
-                    {
-                        writeFile("TicTacNo.txt", board);
+
+                    if (col == 3) {
+                        saveGame("TicTacNo.txt", board);
                         System.out.println("\nGame has been saved.");
                         GG = true;
-                        b.close();
-                        bruh.close();
+                        isGameSaved = true;
                         break;
                     }
-                    System.out.println("X enter the row for your move(0-2):");
+
+                    System.out.println("X enter the row for your move (0-2):");
                     row = kb.nextInt();
-                    if(isValid(board, row, col) == false)
-                    {
-                        System.out.println("\nInvalid move, enter a new move.\n");
-                        System.out.println("X enter the column for your move(0-2):");
-                        col = kb.nextInt();
-                        System.out.println("X enter the row for your move(0-2):");
-                        row = kb.nextInt();
-                    }
-                    else
-                    {
-                        turnCount++;
+
+                    if (isValid(board, row, col)) {
                         board[row][col] = 'X';
-                        System.out.printf("\n %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n\n",board[0][0], board[0][1], board[0][2], board[1][0], board[1][1], board[1][2], board[2][0], board[2][1], board[2][2]);
-                    }
-                }while(isValid(board, row, col) == false);
-                if(GG)
-                    break;
-            }
-            else
-            {
-                do
-                {
-                    col = (int)(Math.random()*2);
-                    row = (int)(Math.random()*2);
-                    if(isValid(board, row, col) == false);
-                    else
                         turnCount++;
-                }while(isValid(board, row, col) == false);
-                board[row][col] = 'O';
+                        break;
+                    } else {
+                        System.out.println("\nInvalid move, try again.");
+                    }
+                }
+
+                if (isGameSaved) break;
+            } else {
+                while (true) {
+                    col = (int)(Math.random() * 3);
+                    row = (int)(Math.random() * 3);
+
+                    if (isValid(board, row, col)) {
+                        board[row][col] = 'O';
+                        turnCount++;
+                        break;
+                    }
+                }
             }
-            writeFile("TicTacNo.txt", board);
-            if(isWinner(board, 'X') == true)
-            {
+
+            saveGame("TicTacNo.txt", board);
+            if (isWinner(board, 'X')) {
                 System.out.println("\nX WINS!");
                 GG = true;
-            }
-            else if(isWinner(board, 'O') == true)
-            {
+                yay.delete();
+            } else if (isWinner(board, 'O')) {
                 System.out.println("\nO WINS.");
                 GG = true;
-            }
-            else if(isCat(board) == true)
-            {
-                System.out.println("\nCats game.");
+                yay.delete();
+            } else if (isCat(board)) {
+                System.out.println("\nCat's game.");
                 GG = true;
+                yay.delete();
             }
-            else
-                GG = false;
-        }while(GG == false);
-        System.out.printf("\n %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n",board[0][0], board[0][1], board[0][2], board[1][0], board[1][1], board[1][2], board[2][0], board[2][1], board[2][2]);
-        bruh.close();
-        yay.delete();
+        } while (!GG);
+
+        printBoard(board);
     }
-    public static void writeFile(String fileName, char[][] board) throws FileNotFoundException {
-        PrintWriter yay = new PrintWriter(fileName);
-        yay.print(""+ board[0][0] + board[0][1] + board[0][2] + board[1][0] + board[1][1] + board[1][2] + board[2][0] + board[2][1] + board[2][2]);
-        yay.close();
+    public static void printBoard(char[][] board) {
+        System.out.printf("\n %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n\n", 
+            board[0][0], board[0][1], board[0][2], 
+            board[1][0], board[1][1], board[1][2], 
+            board[2][0], board[2][1], board[2][2]);
+    }
+    public static void saveGame(String fileName, char[][] board) throws IOException {
+        try (FileWriter fileWriter = new FileWriter(fileName);
+             PrintWriter writer = new PrintWriter(fileWriter)) {
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board[0].length; j++) {
+                    writer.print(board[i][j] == ' ' ? '-' : board[i][j]);
+                }
+            }
+            writer.flush();
+        } catch (IOException e) {
+            System.out.println("Error saving the game: " + e.getMessage());
+        }
     }
     public static char[][] getArray(String fileName) throws IOException {
-        File no = new File(fileName);
-        Scanner kb = new Scanner(no);
-        char[][] bruh = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
-        if(!kb.hasNext())
-            return bruh;
-        String yay = kb.next();
-        for(int i = 0; i < bruh.length; i++)
-        {
-            for(int e = 0; e< bruh[0].length; e++)
-            {
-                bruh[i][e] = yay.charAt(i*3+e);
-            }
+        File file = new File(fileName);
+        char[][] board = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
+
+        // Return an empty board if the file doesn't exist or is empty
+        if (!file.exists() || file.length() != 9) {  // Ensure the file is exactly 9 characters long
+            System.out.println("Invalid save file format, starting a new game.");
+            return board;
         }
-        kb.close();
-        return bruh;
+
+        try (Scanner kb = new Scanner(file)) {
+            String savedBoard = kb.hasNext() ? kb.next() : "";
+            if (savedBoard.length() == 9) {
+                for (int i = 0; i < board.length; i++) {
+                    for (int j = 0; j < board[0].length; j++) {
+                        char ch = savedBoard.charAt(i * 3 + j);
+                        board[i][j] = ch == '-' ? ' ' : ch;
+                    }
+                }
+            } else {
+                System.out.println("Error: Invalid save file format, starting a new game.");
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Save file not found, starting a new game.");
+        } catch (IOException e) {
+            System.out.println("Error reading the save file: " + e.getMessage());
+        }
+
+        return board;
     }
-    public static boolean isWinner(char[][] board, char x)
-    {
-        if((board[0][0] == x && board[0][1] == x && board[0][2] == x)|| (board[1][0] == x && board[1][1] == x && board[1][2] == x)|| (board[2][0] == x && board[2][1] == x && board[2][2] == x)|| (board[0][0] == x && board[1][0] == x && board[2][0] == x)|| (board[0][1] == x && board[1][1] == x && board[2][1] == x)|| (board[0][2] == x && board[1][2] == x && board[2][2] == x)|| (board[0][0] == x && board[1][1] == x && board[2][2] == x)|| (board[0][2] == x && board[1][1] == x && board[2][0] == x))
-            return true;
-        return false;
+    public static boolean isWinner(char[][] board, char x) {
+        return (board[0][0] == x && board[0][1] == x && board[0][2] == x) ||
+               (board[1][0] == x && board[1][1] == x && board[1][2] == x) ||
+               (board[2][0] == x && board[2][1] == x && board[2][2] == x) ||
+               (board[0][0] == x && board[1][0] == x && board[2][0] == x) ||
+               (board[0][1] == x && board[1][1] == x && board[2][1] == x) ||
+               (board[0][2] == x && board[1][2] == x && board[2][2] == x) ||
+               (board[0][0] == x && board[1][1] == x && board[2][2] == x) ||
+               (board[0][2] == x && board[1][1] == x && board[2][0] == x);
     }
-    public static boolean isCat(char[][] board)
-    {
-        for(int r = 0; r < board.length; r++)
-        {
-            for(int c = 0; c < board[0].length; c++)
-            {
-                if(board [r][c] == ' ')
-                {
+    public static boolean isCat(char[][] board) {
+        for (int r = 0; r < board.length; r++) {
+            for (int c = 0; c < board[0].length; c++) {
+                if (board[r][c] == ' ') {
                     return false;
                 }
             }
         }
-        if(isWinner(board, 'X') == false && isWinner(board, 'O') == false)
-        {
-            return true;
-        }
-        return false;
+        return !isWinner(board, 'X') && !isWinner(board, 'O');
     }
-    public static boolean isValid(char[][] board,int row, int col)
-    {
-        if((row > 2 || row < 0)||(col > 2 || col < 0))
-            return false;
-        if(board[row][col] == ' ')
-            return true;
-        return false;
+    public static boolean isValid(char[][] board, int row, int col) {
+        return !(row > 2 || row < 0 || col > 2 || col < 0) && board[row][col] == ' ';
+    }
+    public static int countTurns(char[][] board) {
+        int turnCount = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] != ' ') {
+                    turnCount++;
+                }
+            }
+        }
+        return turnCount;
     }
 }
